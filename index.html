@@ -143,6 +143,9 @@
     }
 
     function populateGrid(gridContainerId, allRows) {
+        // ✨ [추가] 코드가 정상적으로 실행되는지 확인하기 위한 메시지입니다.
+        console.log("✅ [최종 수정 버전] 헤더 줄바꿈 코드가 실행 중입니다.");
+
         try {
             if (allRows.length > 0 && allRows[0].length > 16) {
                 const newTitle = allRows[0][16]; 
@@ -179,7 +182,6 @@
             const div = document.createElement('div');
             div.className = 'grid-cell grid-header';
             
-            // ✨ [수정] 제목 행(헤더)의 내용에도 줄바꿈 기능을 적용합니다.
             let content = (row1[i] || '').replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
 
             if (row2 && row2[i] && row2[i].trim() !== '') {

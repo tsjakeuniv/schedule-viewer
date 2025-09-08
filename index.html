@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>과학영재교육원 연간 일정표 (B4 레이아웃)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -184,14 +184,15 @@
                             return;
                         }
 
-                        // 색상 코드 감지 및 적용
-                        const colorMatch = contentString.match(/\[c(\d+)\]/);
+                        // [수정] 색상 코드를 먼저 찾고 제거
+                        const colorMatch = finalContent.match(/\[c(\d+)\]/);
                         if (colorMatch) {
                             const colorClass = `color-${colorMatch[1]}`;
                             element.classList.add(colorClass);
-                            finalContent = contentString.replace(/\[c\d+\]/, '').trim();
+                            finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
                         }
                         
+                        // 색상 코드 제거 후 줄바꿈 처리
                         element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
                     } else if (contentString) {
                         element.innerHTML = contentString;
@@ -247,4 +248,3 @@
 
 </body>
 </html>
-

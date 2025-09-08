@@ -177,10 +177,11 @@
                 const div = document.createElement('div');
                 div.className = 'grid-cell';
 
-                // [수정] 셀 내용을 처리하여 '||'를 <br>로 변환하는 함수 추가
+                // [수정] 셀 내용을 처리하여 '||' 또는 '//'를 <br>로 변환하는 함수
                 const setCellContent = (element, content) => {
                     if (typeof content === 'string') {
-                        element.innerHTML = content.replace(/\|\|/g, '<br>');
+                        // 이제 || 와 // 모두 줄바꿈으로 인식합니다.
+                        element.innerHTML = content.replace(/\|\||\/\//g, '<br>');
                     } else {
                         element.innerHTML = content;
                     }

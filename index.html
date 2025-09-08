@@ -177,13 +177,20 @@
                 const div = document.createElement('div');
                 div.className = 'grid-cell';
 
-                // [수정] 셀 내용을 처리하여 '||' 또는 '//'를 <br>로 변환하는 함수
+                // [수정] 셀 내용을 처리하는 함수
                 const setCellContent = (element, content) => {
                     if (typeof content === 'string') {
-                        // 이제 || 와 // 모두 줄바꿈으로 인식합니다.
+                        // '**'를 공백으로 처리
+                        if (content.trim() === '**') {
+                            element.innerHTML = '';
+                            return;
+                        }
+                        // || 와 // 모두 줄바꿈으로 인식
                         element.innerHTML = content.replace(/\|\||\/\//g, '<br>');
-                    } else {
+                    } else if (content) {
                         element.innerHTML = content;
+                    } else {
+                         element.innerHTML = '';
                     }
                 };
 

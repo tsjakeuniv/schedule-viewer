@@ -1,4 +1,13 @@
-<style>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>과학영재교육원 연간 일정표 (B4 레이아웃)</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
             margin: 0;
@@ -113,3 +122,166 @@
         .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; }
         .pdf-btn:hover { background-color: #0056b3; }
     </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="pdf-content">
+        <div class="printable-area" id="semester-1-area">
+            <div class="title-container">
+                <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
+                <h2>1학기 교육일정</h2>
+            </div>
+            <div id="schedule-grid-1" class="grid-table"></div>
+        </div>
+        <div class="printable-area" id="semester-2-area">
+            <div class="title-container">
+                <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
+                <h2>2학기 교육일정</h2>
+            </div>
+            <div id="schedule-grid-2" class="grid-table"></div>
+        </div>
+    </div>
+    
+    <div class="pdf-btn-container">
+        <button id="save-pdf-btn" class="pdf-btn">전체 시간표 PDF로 저장하기</button>
+    </div>
+</div>
+
+<script>
+    const googleSheetURL_1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=0&single=true&output=csv';
+    const googleSheetURL_2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=977776868&single=true&output=csv';
+
+    function parseCSV(csvText) {
+        const lines = csvText.trim().replace(/\r/g, '').split('\n');
+        return lines.map(line => line.split(',').map(cell => cell.trim()));
+    }
+
+    function populateGrid(gridContainerId, allRows) {
+        const gridContainer = document.getElementById(gridContainerId);
+        gridContainer.innerHTML = '';
+        if (allRows.length < 2) return;
+        const numColumns = allRows[0].length;
+        
+        let columnTemplates = Array(numColumns).fill('1fr');
+        if (numColumns > 2) {
+            columnTemplates[0] = '70px'; 
+            columnTemplates[1] = '60px'; 
+            columnTemplates[2] = '200px';
+        }
+        gridContainer.style.gridTemplateColumns = columnTemplates.join(' ');
+
+        // 헤더 생성
+        const headerRows = allRows.slice(0, 2);
+        const [row1, row2] = headerRows;
+        for (let i = 0; i < numColumns; i++) {
+            const div = document.createElement('div');
+            div.className = 'grid-cell grid-header';
+            let content = row1[i];
+            if (row2[i] && row2[i].trim() !== '') {
+                content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
+            }
+            div.innerHTML = content;
+            gridContainer.appendChild(div);
+        }
+
+        // 내용 생성
+        const bodyRows = allRows.slice(2);
+        const processedBodyRows = JSON.parse(JSON.stringify(bodyRows));
+
+        for (let i = 0; i < processedBodyRows.length; i++) {
+            if (processedBodyRows[i][0] === null) continue;
+            let rowspan = 1;
+            for (let j = i + 1; j < processedBodyRows.length; j++) {
+                if (processedBodyRows[j][0] === '') {
+                    rowspan++;
+                    processedBodyRows[j][0] = null;
+                } else { break; }
+            }
+            processedBodyRows[i][0] = { content: processedBodyRows[i][0], rowspan: rowspan };
+        }
+        
+        processedBodyRows.forEach((row) => {
+             for (let i = 0; i < row.length; i++) {
+                if (row[i] === null) continue;
+                let colspan = 1;
+                for (let j = i + 1; j < row.length; j++) {
+                    if (row[j] === '') { colspan++; } else { break; }
+                }
+                const div = document.createElement('div');
+                div.className = 'grid-cell';
+
+                if (i >= 3) {
+                    div.classList.add('content-specific-style');
+                }
+
+                const setCellContent = (element, contentString) => {
+                    let finalContent = contentString;
+                    if (typeof contentString === 'string') {
+                        if (contentString.trim() === '**') {
+                            element.innerHTML = '';
+                            return;
+                        }
+
+                        const colorMatch = finalContent.match(/\[c(\d+)\]/);
+                        if (colorMatch) {
+                            const colorClass = `color-${colorMatch[1]}`;
+                            element.classList.add(colorClass);
+                            finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
+                        }
+                        
+                        element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
+                    } else if (contentString) {
+                        element.innerHTML = contentString;
+                    }
+                };
+
+                if (i === 0 && typeof row[i] === 'object') {
+                    setCellContent(div, row[i].content);
+                    div.classList.add('date-cell');
+                    if (row[i].rowspan > 1) {
+                        div.style.gridRow = `span ${row[i].rowspan}`;
+                    }
+                } else {
+                    setCellContent(div, row[i]);
+                }
+                
+                if (colspan > 1) {
+                    div.style.gridColumn = `span ${colspan}`;
+                    for (let k = 1; k < colspan; k++) { row[i + k] = null; }
+                }
+                gridContainer.appendChild(div);
+            }
+        });
+    }
+
+    function loadAndDisplaySheet(url, gridId) {
+        fetch(url)
+            .then(res => res.ok ? res.text() : Promise.reject(`Error: ${res.statusText}`))
+            .then(csv => populateGrid(gridId, parseCSV(csv)))
+            .catch(err => {
+                console.error('Data loading error:', err);
+                document.getElementById(gridId).innerHTML = `<div class="grid-cell" style="grid-column: 1 / -1; color: red;"><b>오류:</b> 데이터를 불러올 수 없습니다.</div>`;
+            });
+    }
+
+    window.onload = function() {
+        loadAndDisplaySheet(googleSheetURL_1, 'schedule-grid-1');
+        loadAndDisplaySheet(googleSheetURL_2, 'schedule-grid-2');
+    };
+    
+    document.getElementById('save-pdf-btn').addEventListener('click', () => {
+        const opt = {
+            margin: 0.5,
+            filename: '2025_과학영재원_연간일정표_B4.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'b4', orientation: 'landscape' }
+        };
+        const content = document.getElementById('pdf-content');
+        html2pdf().from(content).set(opt).save();
+    });
+</script>
+
+</body>
+</html>

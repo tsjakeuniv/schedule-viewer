@@ -2,75 +2,94 @@
         body {
             font-family: 'Malgun Gothic', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 2vw;
             background-color: #f0f2f5;
             color: #333;
+            /* 페이지 전체에 스크롤바가 생기지 않도록 합니다. */
+            overflow: hidden; 
         }
 
         .printable-area {
-            width: 100%;
+            /* [핵심 1] 화면 너비의 90%를 차지하게 하되, 최대 크기는 943px로 제한 */
+            width: 90vw;
             max-width: 943px;
-            /* 높이 고정 및 스크롤 설정은 제거하거나 이전 상태로 되돌립니다. */
-            min-height: 670px; 
-            margin: 30px auto;
-            padding: 20px;
+            
+            /* [핵심 2] B4 용지 비율(943:670)을 강제로 고정합니다. */
+            aspect-ratio: 943 / 670;
+            
+            /* [핵심 3] 내용이 넘칠 경우, 강제로 숨겨서 틀을 벗어나지 못하게 합니다. */
+            overflow: hidden;
+
+            /* [핵심 4] 기준 글자 크기를 화면 너비에 연동시켜 내용물 크기를 조절합니다. */
+            /* 내용이 너무 많아 잘린다면 이 숫자를 줄여야 합니다. (예: 1.1vw -> 1.0vw) */
+            font-size: 1.1vw;
+
+            /* 내부 요소 정렬을 위한 Flexbox 설정 */
+            display: flex;
+            flex-direction: column;
+
+            margin: 1em auto;
+            padding: 2em;
             background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            page-break-inside: avoid;
+            box-shadow: 0 0.4em 1.2em rgba(0,0,0,0.1);
+            border-radius: 0.8em;
+            box-sizing: border-box;
         }
         
+        @media (min-width: 1050px) {
+            .printable-area {
+                /* 큰 화면에서는 폰트 크기를 고정값으로 전환 */
+                font-size: 10px;
+            }
+        }
+
         .title-container {
+            /* flex-shrink: 0 은 제목 부분의 높이가 줄어들지 않도록 고정합니다. */
+            flex-shrink: 0; 
             background-color: #f0f0f0;
-            border-radius: 15px;
-            padding: 25px 20px;
-            margin-bottom: 30px;
+            border-radius: 1.5em;
+            padding: 1.5em 2em; /* 패딩을 약간 줄여 내용 공간 확보 */
+            margin-bottom: 1.5em; /* 간격을 약간 줄여 내용 공간 확보 */
             text-align: center;
         }
 
         .title-container h1 {
             font-size: 1.8em;
             color: #2c3e50;
-            margin-top: 0;
-            margin-bottom: 10px;
+            margin: 0 0 0.5em 0;
         }
         
         .title-container h2 {
             font-size: 1.2em;
             color: #555;
-            margin-top: 0;
-            margin-bottom: 0;
+            margin: 0;
         }
         
-        h1, h2 {
-            color: #2c3e50;
-        }
-
         .grid-table {
+            /* flex-grow: 1 은 표가 남는 공간을 모두 채우도록 만듭니다. */
+            flex-grow: 1;
             display: grid;
-            gap: 2px; /* [변경] 칸 사이 간격을 줄였습니다. */
+            gap: 0.2em; /* 간격을 최소화하여 공간 확보 */
         }
 
         .grid-cell {
             background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 1px;
+            border-radius: 0.6em;
+            padding: 0.1em;
             text-align: center;
             font-size: 0.85em;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 40px;
-            line-height: 1.4;
+            min-height: 0; /* 최소 높이 제한 해제 */
+            line-height: 1.3;
             word-break: break-all;
-            transition: background-color 0.2s;
         }
 
         .grid-header {
             background-color: #e9ecef;
             color: #333;
             font-weight: bold;
-            flex-direction: column;
         }
 
         .date-cell {
@@ -79,21 +98,18 @@
         }
         
         .content-specific-style {
-            font-size: 0.6em;
-            padding-top: 0px;      /* [변경] 상하 여백을 줄였습니다. */
-            padding-bottom: 0px;  /* [변경] 상하 여백을 줄였습니다. */
-            line-height: 1.1;     /* [변경] 줄 간격을 줄였습니다. */
-            min-height: auto;
+            font-size: 0.65em; /* 글자 크기를 약간 키워 가독성 확보 */
+            padding: 0.1em 0;
+            line-height: 1.15;
         }
         
-        /* 색상 코드 스타일 */
-        .color-1 { background-color: #e9d8fd; color: #3c2a62; } /* 보라색 */
-        .color-2 { background-color: #d4edda; color: #155724; } /* 녹색 */
-        .color-3 { background-color: #ffe8cc; color: #664d03; } /* 주황색 */
-        .color-4 { background-color: #f8d7da; color: #721c24; } /* 분홍색 */
-        .color-5 { background-color: #fff3cd; color: #664d03; } /* 노란색 */
+        .color-1 { background-color: #e9d8fd; color: #3c2a62; }
+        .color-2 { background-color: #d4edda; color: #155724; }
+        .color-3 { background-color: #ffe8cc; color: #664d03; }
+        .color-4 { background-color: #f8d7da; color: #721c24; }
+        .color-5 { background-color: #fff3cd; color: #664d03; }
         
         .pdf-btn-container { text-align: center; margin: 40px auto; }
-        .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
+        .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; }
         .pdf-btn:hover { background-color: #0056b3; }
     </style>

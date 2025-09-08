@@ -19,6 +19,7 @@
         .printable-area {
             width: 100%;
             max-width: 943px; /* B4 비율에 맞게 최대 너비 조정 */
+            min-height: 670px; /* [추가] B4 비율에 맞는 최소 높이 설정 */
             margin: 30px auto;
             padding: 20px;
             background-color: #ffffff;
@@ -240,9 +241,6 @@
         html2pdf().from(content).set(opt).save();
     });
 </script>
-
-</body>
-</html>
 
 </body>
 </html>

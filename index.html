@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학영재교육원 연간 일정표 </title>
+    <title>과학영재교육원 연간 일정표 (B4 레이아웃)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -114,14 +114,14 @@
     <div id="pdf-content">
         <div class="printable-area" id="semester-1-area">
             <div class="title-container">
-                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표(1)</h1>
+                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
                 <h2>1학기 교육일정</h2>
             </div>
             <div id="schedule-grid-1" class="grid-table"></div>
         </div>
         <div class="printable-area" id="semester-2-area">
             <div class="title-container">
-                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표(2)</h1>
+                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
                 <h2>2학기 교육일정</h2>
             </div>
             <div id="schedule-grid-2" class="grid-table"></div>
@@ -143,7 +143,7 @@
     }
 
     function populateGrid(gridContainerId, allRows) {
-        console.log("✅ [최종 수정 버전] 헤더 줄바꿈 코드가 실행 중입니다.");
+        console.log("✅ [최종 수정 버전] 헤더 줄바꿈/색상 코드 실행 중입니다.");
 
         try {
             if (allRows.length > 0 && allRows[0].length > 16) {
@@ -181,10 +181,18 @@
             const div = document.createElement('div');
             div.className = 'grid-cell grid-header';
             
-            // 1행의 내용에서 ||를 찾아 줄바꿈을 적용합니다.
-            let content = (row1[i] || '').replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
+            let rawContent = row1[i] || '';
 
-            // 2행의 내용은 작은 글씨의 부제목으로 아래에 추가됩니다.
+            // ✨ [추가] 제목 행(헤더)에도 색상 변경 기능을 적용합니다.
+            const colorMatch = rawContent.match(/\[c(\d+)\]/);
+            if (colorMatch) {
+                const colorClass = `color-${colorMatch[1]}`;
+                div.classList.add(colorClass);
+                rawContent = rawContent.replace(/\[c\d+\]/, '').trim();
+            }
+            
+            let content = rawContent.replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
+
             if (row2 && row2[i] && row2[i].trim() !== '') {
                 content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
             }

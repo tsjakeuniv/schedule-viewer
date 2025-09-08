@@ -11,79 +11,56 @@
         body {
             font-family: 'Malgun Gothic', sans-serif;
             margin: 0;
-            padding: 2vw;
+            padding: 20px;
             background-color: #f0f2f5;
             color: #333;
-            overflow: hidden; 
         }
 
         .printable-area {
-            width: 90vw;
-            max-width: 943px;
-            aspect-ratio: 943 / 670;
-            overflow: hidden;
-            font-size: 1.1vw;
-            display: flex;
-            flex-direction: column;
-            margin: 1em auto;
-            padding: 2em;
+            width: 100%;
+            max-width: 943px; /* B4 비율에 맞게 최대 너비 조정 */
+            min-height: 670px; /* B4 비율에 맞는 최소 높이 설정 */
+            margin: 30px auto;
+            padding: 20px;
             background-color: #ffffff;
-            box-shadow: 0 0.4em 1.2em rgba(0,0,0,0.1);
-            border-radius: 0.8em;
-            box-sizing: border-box;
-        }
-        
-        @media (min-width: 1050px) {
-            .printable-area {
-                font-size: 10px;
-            }
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            page-break-inside: avoid; /* [추가] PDF 변환 시 이 영역 안에서 페이지가 나뉘지 않도록 함 */
         }
 
-        .title-container {
-            flex-shrink: 0; 
-            background-color: #f0f0f0;
-            border-radius: 1.5em;
-            padding: 1.5em 2em;
-            margin-bottom: 1.5em;
+        h1, h2 {
             text-align: center;
+            color: #2c3e50;
         }
 
-        .title-container h1 {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin: 0 0 0.5em 0;
-        }
-        
-        .title-container h2 {
-            font-size: 1.2em;
-            color: #555;
-            margin: 0;
-        }
+        h1 { font-size: 1.8em; margin-bottom: 5px; }
+        h2 { font-size: 1.2em; color: #555; margin-bottom: 25px; }
         
         .grid-table {
-            flex-grow: 1;
             display: grid;
-            gap: 0.2em;
+            gap: 5px;
         }
 
         .grid-cell {
             background-color: #f8f9fa;
-            border-radius: 0.6em;
-            padding: 0.1em;
+            border-radius: 6px;
+            padding: 1px;
             text-align: center;
             font-size: 0.85em;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 0;
-            line-height: 1.3;
+            min-height: 40px;
+            line-height: 1.4;
             word-break: break-all;
+            transition: background-color 0.2s;
         }
 
         .grid-header {
             background-color: #e9ecef;
             color: #333;
             font-weight: bold;
+            flex-direction: column;
         }
 
         .date-cell {
@@ -92,19 +69,22 @@
         }
         
         .content-specific-style {
-            font-size: 0.65em;
-            padding: 0.1em 0;
-            line-height: 1.15;
+            font-size: 0.6em;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            line-height: 1.2;
+            min-height: auto;
         }
         
-        .color-1 { background-color: #e9d8fd; color: #3c2a62; }
-        .color-2 { background-color: #d4edda; color: #155724; }
-        .color-3 { background-color: #ffe8cc; color: #664d03; }
-        .color-4 { background-color: #f8d7da; color: #721c24; }
-        .color-5 { background-color: #fff3cd; color: #664d03; }
+        /* 색상 코드 스타일 */
+        .color-1 { background-color: #e9d8fd; color: #3c2a62; } /* 보라색 */
+        .color-2 { background-color: #d4edda; color: #155724; } /* 녹색 */
+        .color-3 { background-color: #ffe8cc; color: #664d03; } /* 주황색 */
+        .color-4 { background-color: #f8d7da; color: #721c24; } /* 분홍색 */
+        .color-5 { background-color: #fff3cd; color: #664d03; } /* 노란색 */
         
         .pdf-btn-container { text-align: center; margin: 40px auto; }
-        .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
         .pdf-btn:hover { background-color: #0056b3; }
     </style>
 </head>
@@ -113,17 +93,13 @@
 <div class="container">
     <div id="pdf-content">
         <div class="printable-area" id="semester-1-area">
-            <div class="title-container">
-                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
-                <h2>1학기 교육일정</h2>
-            </div>
+            <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
+            <h2>1학기 교육일정</h2>
             <div id="schedule-grid-1" class="grid-table"></div>
         </div>
         <div class="printable-area" id="semester-2-area">
-            <div class="title-container">
-                <h1 class="main-title">2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
-                <h2>2학기 교육일정</h2>
-            </div>
+            <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
+            <h2>2학기 교육일정</h2>
             <div id="schedule-grid-2" class="grid-table"></div>
         </div>
     </div>
@@ -143,27 +119,10 @@
     }
 
     function populateGrid(gridContainerId, allRows) {
-        console.log("✅ [최종 수정 버전] 헤더 줄바꿈/색상 코드 실행 중입니다.");
-
-        try {
-            if (allRows.length > 0 && allRows[0].length > 16) {
-                const newTitle = allRows[0][16]; 
-                if (newTitle && newTitle.trim() !== '') {
-                    document.querySelectorAll('.main-title').forEach(titleElement => {
-                        titleElement.textContent = newTitle;
-                    });
-                }
-            }
-        } catch (e) {
-            console.error("제목을 설정하는 중 오류가 발생했습니다.", e);
-        }
-
-        const displayRows = allRows.map(row => row.slice(0, 16));
         const gridContainer = document.getElementById(gridContainerId);
         gridContainer.innerHTML = '';
-
-        if (displayRows.length < 2) return;
-        const numColumns = displayRows[0].length;
+        if (allRows.length < 2) return;
+        const numColumns = allRows[0].length;
         
         let columnTemplates = Array(numColumns).fill('1fr');
         if (numColumns > 2) {
@@ -173,34 +132,22 @@
         }
         gridContainer.style.gridTemplateColumns = columnTemplates.join(' ');
 
-        const headerRows = displayRows.slice(0, 2);
-        const [row1, row2] = headerRows;
-        
         // 헤더 생성
+        const headerRows = allRows.slice(0, 2);
+        const [row1, row2] = headerRows;
         for (let i = 0; i < numColumns; i++) {
             const div = document.createElement('div');
             div.className = 'grid-cell grid-header';
-            
-            let rawContent = row1[i] || '';
-
-            // ✨ [추가] 제목 행(헤더)에도 색상 변경 기능을 적용합니다.
-            const colorMatch = rawContent.match(/\[c(\d+)\]/);
-            if (colorMatch) {
-                const colorClass = `color-${colorMatch[1]}`;
-                div.classList.add(colorClass);
-                rawContent = rawContent.replace(/\[c\d+\]/, '').trim();
-            }
-            
-            let content = rawContent.replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
-
-            if (row2 && row2[i] && row2[i].trim() !== '') {
+            let content = row1[i];
+            if (row2[i] && row2[i].trim() !== '') {
                 content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
             }
             div.innerHTML = content;
             gridContainer.appendChild(div);
         }
 
-        const bodyRows = displayRows.slice(2);
+        // 내용 생성
+        const bodyRows = allRows.slice(2);
         const processedBodyRows = JSON.parse(JSON.stringify(bodyRows));
 
         for (let i = 0; i < processedBodyRows.length; i++) {
@@ -244,8 +191,7 @@
                             finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
                         }
                         
-                        element.innerHTML = finalContent.replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
-
+                        element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
                     } else if (contentString) {
                         element.innerHTML = contentString;
                     }

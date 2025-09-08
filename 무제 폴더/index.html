@@ -50,6 +50,7 @@
             justify-content: center;
             min-height: 45px;
             line-height: 1.5;
+            word-break: break-all;
         }
 
         .grid-header {
@@ -126,12 +127,12 @@
         const numColumns = allRows[0].length;
         
         // --- [수정] 열 너비 설정 로직 ---
-        // 1, 2열은 1.5fr, 3열(비고)은 4fr, 나머지는 1fr로 설정하여 비율을 맞춥니다.
-        let columnTemplates = Array(numColumns).fill('1fr');
+        // 날짜, 구분, 비고 열은 고정 너비로, 나머지는 가변 비율(1fr)로 설정합니다.
+        let columnTemplates = Array(numColumns).fill('1fr'); // 나머지 열들은 1fr로 기본 설정
         if (numColumns > 2) {
-            columnTemplates[0] = '1.5fr'; // 날짜
-            columnTemplates[1] = '1.5fr'; // 구분
-            columnTemplates[2] = '4fr';   // 비고
+            columnTemplates[0] = '60px'; // 날짜 (고정)
+            columnTemplates[1] = '60px'; // 구분 (고정)
+            columnTemplates[2] = '300px'; // 비고 (고정)
         }
         gridContainer.style.gridTemplateColumns = columnTemplates.join(' ');
 
@@ -225,6 +226,11 @@
         };
         const content = document.getElementById('pdf-content');
         html2pdf().from(content).set(opt).save();
+    });
+</script>
+
+</body>
+</html>
     });
 </script>
 

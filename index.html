@@ -18,7 +18,7 @@
 
         .printable-area {
             width: 100%;
-            max-width: 1122px;
+            max-width: 943px; /* B4 비율에 맞게 최대 너비 조정 */
             margin: 30px auto;
             padding: 20px;
             background-color: #ffffff;
@@ -42,7 +42,7 @@
         .grid-cell {
             background-color: #f8f9fa;
             border-radius: 6px;
-            padding: 10px;
+            padding: 3px;
             text-align: center;
             font-size: 0.85em;
             display: flex;
@@ -63,6 +63,7 @@
         .date-cell {
              font-weight: bold;
              background-color: #e9ecef;
+             font-size: 0.8em;
         }
         
         .pdf-btn-container {
@@ -126,37 +127,29 @@
 
         const numColumns = allRows[0].length;
         
-        // --- [수정] 열 너비 설정 로직 ---
-        // 날짜, 구분, 비고 열은 고정 너비로, 나머지는 가변 비율(1fr)로 설정합니다.
-        let columnTemplates = Array(numColumns).fill('1fr'); // 나머지 열들은 1fr로 기본 설정
+        let columnTemplates = Array(numColumns).fill('1fr');
         if (numColumns > 2) {
-            columnTemplates[0] = '60px'; // 날짜 (고정)
-            columnTemplates[1] = '60px'; // 구분 (고정)
-            columnTemplates[2] = '300px'; // 비고 (고정)
+            columnTemplates[0] = '70px'; 
+            columnTemplates[1] = '60px'; 
+            columnTemplates[2] = '200px';
         }
         gridContainer.style.gridTemplateColumns = columnTemplates.join(' ');
 
-        // 헤더 생성 (기존과 동일)
+        // 헤더 생성
         const headerRows = allRows.slice(0, 2);
         const [row1, row2] = headerRows;
         for (let i = 0; i < numColumns; i++) {
             const div = document.createElement('div');
             div.className = 'grid-cell grid-header';
-            const classNameNode = document.createTextNode(row1[i]);
-            div.appendChild(classNameNode);
+            let content = row1[i];
             if (row2[i] && row2[i].trim() !== '') {
-                const br = document.createElement('br');
-                const professorSpan = document.createElement('span');
-                professorSpan.style.fontSize = '0.9em';
-                professorSpan.style.fontWeight = 'normal';
-                professorSpan.textContent = row2[i];
-                div.appendChild(br);
-                div.appendChild(professorSpan);
+                content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
             }
+            div.innerHTML = content;
             gridContainer.appendChild(div);
         }
 
-        // 내용 생성 (기존과 동일)
+        // 내용 생성
         const bodyRows = allRows.slice(2);
         const processedBodyRows = JSON.parse(JSON.stringify(bodyRows));
 
@@ -183,15 +176,26 @@
                 }
                 const div = document.createElement('div');
                 div.className = 'grid-cell';
+
+                // [수정] 셀 내용을 처리하여 '||'를 <br>로 변환하는 함수 추가
+                const setCellContent = (element, content) => {
+                    if (typeof content === 'string') {
+                        element.innerHTML = content.replace(/\|\|/g, '<br>');
+                    } else {
+                        element.innerHTML = content;
+                    }
+                };
+
                 if (i === 0 && typeof row[i] === 'object') {
-                    div.innerHTML = row[i].content;
+                    setCellContent(div, row[i].content);
                     div.classList.add('date-cell');
                     if (row[i].rowspan > 1) {
                         div.style.gridRow = `span ${row[i].rowspan}`;
                     }
                 } else {
-                    div.innerHTML = row[i];
+                    setCellContent(div, row[i]);
                 }
+                
                 if (colspan > 1) {
                     div.style.gridColumn = `span ${colspan}`;
                     for (let k = 1; k < colspan; k++) { row[i + k] = null; }
@@ -219,10 +223,10 @@
     document.getElementById('save-pdf-btn').addEventListener('click', () => {
         const opt = {
             margin: 0.5,
-            filename: '2025_과학영재원_연간일정표.pdf',
+            filename: '2025_과학영재원_연간일정표_B4.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'in', format: 'a3', orientation: 'landscape' }
+            jsPDF: { unit: 'in', format: 'b4', orientation: 'landscape' }
         };
         const content = document.getElementById('pdf-content');
         html2pdf().from(content).set(opt).save();

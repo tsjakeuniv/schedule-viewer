@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학영재교육원 연간 일정표 </title>
+    <title>과학영재교육원 연간 일정표 (B4 레이아웃)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -143,7 +143,6 @@
     }
 
     function populateGrid(gridContainerId, allRows) {
-        // 1. 먼저 Q열(인덱스 16)에서 제목 데이터를 읽습니다.
         try {
             if (allRows.length > 0 && allRows[0].length > 16) {
                 const newTitle = allRows[0][16]; 
@@ -157,12 +156,10 @@
             console.error("제목을 설정하는 중 오류가 발생했습니다.", e);
         }
 
-        // 2. 표를 그릴 데이터에서는 Q열을 완전히 제거합니다.
         const displayRows = allRows.map(row => row.slice(0, 16));
-
-        // 3. 이제부터는 Q열이 제거된 'displayRows' 데이터만을 사용해 표를 그립니다.
         const gridContainer = document.getElementById(gridContainerId);
         gridContainer.innerHTML = '';
+
         if (displayRows.length < 2) return;
         const numColumns = displayRows[0].length;
         
@@ -231,7 +228,9 @@
                             finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
                         }
                         
-                        element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
+                        // 이 코드가 모든 셀의 || 기호를 줄바꿈으로 변경합니다.
+                        element.innerHTML = finalContent.replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
+
                     } else if (contentString) {
                         element.innerHTML = contentString;
                     }

@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학영재교육원 연간 일정표 (A3 레이아웃)</title>
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>과학영재교육원 연간 일정표 (B4 레이아웃)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -45,13 +45,14 @@
             border-radius: 6px;
             padding: 1px;
             text-align: center;
-            font-size: 0.85em; /* 나머지 셀들의 기본 글자 크기 */
+            font-size: 0.85em;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 45px;
-            line-height: 1.5;
+            min-height: 40px;
+            line-height: 1.4;
             word-break: break-all;
+            transition: background-color 0.2s;
         }
 
         .grid-header {
@@ -64,46 +65,37 @@
         .date-cell {
              font-weight: bold;
              background-color: #e9ecef;
-             font-size: 0.8em; /* 날짜 열 글자 크기 */
         }
         
-        /* [추가] 특정 열의 내용 글자 크기를 작게 만드는 스타일 */
-        .content-small {
+        .content-specific-style {
             font-size: 0.6em;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            line-height: 1.2;
+            min-height: auto;
         }
         
-        .pdf-btn-container {
-            text-align: center;
-            margin: 40px auto;
-        }
-        .pdf-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .pdf-btn:hover {
-            background-color: #0056b3;
-        }
+        /* [추가] 색상 코드 스타일 */
+        .color-1 { background-color: #e9d8fd; color: #3c2a62; } /* 보라색 */
+        .color-2 { background-color: #d4edda; color: #155724; } /* 녹색 */
+        .color-3 { background-color: #ffe8cc; color: #664d03; } /* 주황색 */
+        .color-4 { background-color: #f8d7da; color: #721c24; } /* 분홍색 */
+        .color-5 { background-color: #fff3cd; color: #664d03; } /* 노란색 */
+        
+        .pdf-btn-container { text-align: center; margin: 40px auto; }
+        .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
+        .pdf-btn:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="pdf-content">
-        <!-- 1학기 A3 영역 -->
         <div class="printable-area" id="semester-1-area">
             <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
             <h2>1학기 교육일정</h2>
             <div id="schedule-grid-1" class="grid-table"></div>
         </div>
-
-        <!-- 2학기 A3 영역 -->
         <div class="printable-area" id="semester-2-area">
             <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
             <h2>2학기 교육일정</h2>
@@ -128,9 +120,7 @@
     function populateGrid(gridContainerId, allRows) {
         const gridContainer = document.getElementById(gridContainerId);
         gridContainer.innerHTML = '';
-
         if (allRows.length < 2) return;
-
         const numColumns = allRows[0].length;
         
         let columnTemplates = Array(numColumns).fill('1fr');
@@ -166,9 +156,7 @@
                 if (processedBodyRows[j][0] === '') {
                     rowspan++;
                     processedBodyRows[j][0] = null;
-                } else {
-                    break;
-                }
+                } else { break; }
             }
             processedBodyRows[i][0] = { content: processedBodyRows[i][0], rowspan: rowspan };
         }
@@ -183,23 +171,30 @@
                 const div = document.createElement('div');
                 div.className = 'grid-cell';
 
-                // [추가] 특정 열에 작은 글자 스타일을 적용하는 로직
-                // i는 0부터 시작하는 열 인덱스 (1=2열, 2=3열, numColumns-1=마지막열)
-                if (i === 1 || i === 2 || i === (numColumns - 1)) {
-                    div.classList.add('content-small');
+                if (i >= 3) {
+                    div.classList.add('content-specific-style');
                 }
 
-                const setCellContent = (element, content) => {
-                    if (typeof content === 'string') {
-                        if (content.trim() === '**') {
+                // [수정] 셀 내용을 처리하는 함수
+                const setCellContent = (element, contentString) => {
+                    let finalContent = contentString;
+                    if (typeof contentString === 'string') {
+                        if (contentString.trim() === '**') {
                             element.innerHTML = '';
                             return;
                         }
-                        element.innerHTML = content.replace(/\|\||\/\//g, '<br>');
-                    } else if (content) {
-                        element.innerHTML = content;
-                    } else {
-                         element.innerHTML = '';
+
+                        // 색상 코드 감지 및 적용
+                        const colorMatch = contentString.match(/\[c(\d+)\]/);
+                        if (colorMatch) {
+                            const colorClass = `color-${colorMatch[1]}`;
+                            element.classList.add(colorClass);
+                            finalContent = contentString.replace(/\[c\d+\]/, '').trim();
+                        }
+                        
+                        element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
+                    } else if (contentString) {
+                        element.innerHTML = contentString;
                     }
                 };
 

@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학영재교육원 연간 일정표 </title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <style>
+<style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
             margin: 0;
@@ -18,8 +9,9 @@
 
         .printable-area {
             width: 100%;
-            max-width: 943px; /* B4 비율에 맞게 최대 너비 조정 */
-            min-height: 670px; /* B4 비율에 맞는 최소 높이 설정 */
+            max-width: 943px;
+            /* 높이 고정 및 스크롤 설정은 제거하거나 이전 상태로 되돌립니다. */
+            min-height: 670px; 
             margin: 30px auto;
             padding: 20px;
             background-color: #ffffff;
@@ -28,16 +20,14 @@
             page-break-inside: avoid;
         }
         
-        /* ✨ [추가] 제목을 감싸는 회색 박스 스타일 */
         .title-container {
-            background-color: #f0f0f0; /* 밝은 회색 배경 */
-            border-radius: 15px;      /* 모서리를 부드럽게 */
-            padding: 25px 20px;       /* 안쪽 여백 */
-            margin-bottom: 30px;      /* 제목과 아래 표 사이의 간격 */
+            background-color: #f0f0f0;
+            border-radius: 15px;
+            padding: 25px 20px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
-        /* ✨ [수정] title-container 안의 h1, h2 스타일 조정 */
         .title-container h1 {
             font-size: 1.8em;
             color: #2c3e50;
@@ -52,15 +42,13 @@
             margin-bottom: 0;
         }
         
-        /* 기존 h1, h2의 중앙 정렬은 title-container에서 처리하므로 개별 설정 불필요 */
         h1, h2 {
-            /* text-align: center; <-- 이제 title-container에서 담당 */
             color: #2c3e50;
         }
 
         .grid-table {
             display: grid;
-            gap: 5px;
+            gap: 2px; /* [변경] 칸 사이 간격을 줄였습니다. */
         }
 
         .grid-cell {
@@ -92,9 +80,9 @@
         
         .content-specific-style {
             font-size: 0.6em;
-            padding-top: 2px;
-            padding-bottom: 2px;
-            line-height: 1.2;
+            padding-top: 0px;      /* [변경] 상하 여백을 줄였습니다. */
+            padding-bottom: 0px;  /* [변경] 상하 여백을 줄였습니다. */
+            line-height: 1.1;     /* [변경] 줄 간격을 줄였습니다. */
             min-height: auto;
         }
         
@@ -109,166 +97,3 @@
         .pdf-btn { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
         .pdf-btn:hover { background-color: #0056b3; }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <div id="pdf-content">
-        <div class="printable-area" id="semester-1-area">
-            <div class="title-container">
-                <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
-                <h2>1학기 교육일정</h2>
-            </div>
-            <div id="schedule-grid-1" class="grid-table"></div>
-        </div>
-        <div class="printable-area" id="semester-2-area">
-            <div class="title-container">
-                <h1>2025학년도 서울교육대학교 과학영재교육원 연간 일정표</h1>
-                <h2>2학기 교육일정</h2>
-            </div>
-            <div id="schedule-grid-2" class="grid-table"></div>
-        </div>
-    </div>
-    
-    <div class="pdf-btn-container">
-        <button id="save-pdf-btn" class="pdf-btn">전체 시간표 PDF로 저장하기</button>
-    </div>
-</div>
-
-<script>
-    const googleSheetURL_1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=0&single=true&output=csv';
-    const googleSheetURL_2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=977776868&single=true&output=csv';
-
-    function parseCSV(csvText) {
-        const lines = csvText.trim().replace(/\r/g, '').split('\n');
-        return lines.map(line => line.split(',').map(cell => cell.trim()));
-    }
-
-    function populateGrid(gridContainerId, allRows) {
-        const gridContainer = document.getElementById(gridContainerId);
-        gridContainer.innerHTML = '';
-        if (allRows.length < 2) return;
-        const numColumns = allRows[0].length;
-        
-        let columnTemplates = Array(numColumns).fill('1fr');
-        if (numColumns > 2) {
-            columnTemplates[0] = '70px'; 
-            columnTemplates[1] = '60px'; 
-            columnTemplates[2] = '200px';
-        }
-        gridContainer.style.gridTemplateColumns = columnTemplates.join(' ');
-
-        // 헤더 생성
-        const headerRows = allRows.slice(0, 2);
-        const [row1, row2] = headerRows;
-        for (let i = 0; i < numColumns; i++) {
-            const div = document.createElement('div');
-            div.className = 'grid-cell grid-header';
-            let content = row1[i];
-            if (row2[i] && row2[i].trim() !== '') {
-                content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
-            }
-            div.innerHTML = content;
-            gridContainer.appendChild(div);
-        }
-
-        // 내용 생성
-        const bodyRows = allRows.slice(2);
-        const processedBodyRows = JSON.parse(JSON.stringify(bodyRows));
-
-        for (let i = 0; i < processedBodyRows.length; i++) {
-            if (processedBodyRows[i][0] === null) continue;
-            let rowspan = 1;
-            for (let j = i + 1; j < processedBodyRows.length; j++) {
-                if (processedBodyRows[j][0] === '') {
-                    rowspan++;
-                    processedBodyRows[j][0] = null;
-                } else { break; }
-            }
-            processedBodyRows[i][0] = { content: processedBodyRows[i][0], rowspan: rowspan };
-        }
-        
-        processedBodyRows.forEach((row) => {
-             for (let i = 0; i < row.length; i++) {
-                if (row[i] === null) continue;
-                let colspan = 1;
-                for (let j = i + 1; j < row.length; j++) {
-                    if (row[j] === '') { colspan++; } else { break; }
-                }
-                const div = document.createElement('div');
-                div.className = 'grid-cell';
-
-                if (i >= 3) {
-                    div.classList.add('content-specific-style');
-                }
-
-                const setCellContent = (element, contentString) => {
-                    let finalContent = contentString;
-                    if (typeof contentString === 'string') {
-                        if (contentString.trim() === '**') {
-                            element.innerHTML = '';
-                            return;
-                        }
-
-                        const colorMatch = finalContent.match(/\[c(\d+)\]/);
-                        if (colorMatch) {
-                            const colorClass = `color-${colorMatch[1]}`;
-                            element.classList.add(colorClass);
-                            finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
-                        }
-                        
-                        element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
-                    } else if (contentString) {
-                        element.innerHTML = contentString;
-                    }
-                };
-
-                if (i === 0 && typeof row[i] === 'object') {
-                    setCellContent(div, row[i].content);
-                    div.classList.add('date-cell');
-                    if (row[i].rowspan > 1) {
-                        div.style.gridRow = `span ${row[i].rowspan}`;
-                    }
-                } else {
-                    setCellContent(div, row[i]);
-                }
-                
-                if (colspan > 1) {
-                    div.style.gridColumn = `span ${colspan}`;
-                    for (let k = 1; k < colspan; k++) { row[i + k] = null; }
-                }
-                gridContainer.appendChild(div);
-            }
-        });
-    }
-
-    function loadAndDisplaySheet(url, gridId) {
-        fetch(url)
-            .then(res => res.ok ? res.text() : Promise.reject(`Error: ${res.statusText}`))
-            .then(csv => populateGrid(gridId, parseCSV(csv)))
-            .catch(err => {
-                console.error('Data loading error:', err);
-                document.getElementById(gridId).innerHTML = `<div class="grid-cell" style="grid-column: 1 / -1; color: red;"><b>오류:</b> 데이터를 불러올 수 없습니다.</div>`;
-            });
-    }
-
-    window.onload = function() {
-        loadAndDisplaySheet(googleSheetURL_1, 'schedule-grid-1');
-        loadAndDisplaySheet(googleSheetURL_2, 'schedule-grid-2');
-    };
-    
-    document.getElementById('save-pdf-btn').addEventListener('click', () => {
-        const opt = {
-            margin: 0.5,
-            filename: '2025_과학영재원_연간일정표_B4.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'in', format: 'b4', orientation: 'landscape' }
-        };
-        const content = document.getElementById('pdf-content');
-        html2pdf().from(content).set(opt).save();
-    });
-</script>
-
-</body>
-</html>

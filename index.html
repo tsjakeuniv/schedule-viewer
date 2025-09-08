@@ -25,6 +25,7 @@
             background-color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border-radius: 8px;
+            page-break-inside: avoid; /* [추가] PDF 변환 시 이 영역 안에서 페이지가 나뉘지 않도록 함 */
         }
 
         h1, h2 {
@@ -75,7 +76,7 @@
             min-height: auto;
         }
         
-        /* [추가] 색상 코드 스타일 */
+        /* 색상 코드 스타일 */
         .color-1 { background-color: #e9d8fd; color: #3c2a62; } /* 보라색 */
         .color-2 { background-color: #d4edda; color: #155724; } /* 녹색 */
         .color-3 { background-color: #ffe8cc; color: #664d03; } /* 주황색 */
@@ -175,7 +176,6 @@
                     div.classList.add('content-specific-style');
                 }
 
-                // [수정] 셀 내용을 처리하는 함수
                 const setCellContent = (element, contentString) => {
                     let finalContent = contentString;
                     if (typeof contentString === 'string') {
@@ -184,7 +184,6 @@
                             return;
                         }
 
-                        // [수정] 색상 코드를 먼저 찾고 제거
                         const colorMatch = finalContent.match(/\[c(\d+)\]/);
                         if (colorMatch) {
                             const colorClass = `color-${colorMatch[1]}`;
@@ -192,7 +191,6 @@
                             finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
                         }
                         
-                        // 색상 코드 제거 후 줄바꿈 처리
                         element.innerHTML = finalContent.replace(/\|\||\/\//g, '<br>');
                     } else if (contentString) {
                         element.innerHTML = contentString;

@@ -173,10 +173,15 @@
 
         const headerRows = displayRows.slice(0, 2);
         const [row1, row2] = headerRows;
+        
+        // 헤더 생성
         for (let i = 0; i < numColumns; i++) {
             const div = document.createElement('div');
             div.className = 'grid-cell grid-header';
-            let content = row1[i];
+            
+            // ✨ [수정] 제목 행(헤더)의 내용에도 줄바꿈 기능을 적용합니다.
+            let content = (row1[i] || '').replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
+
             if (row2 && row2[i] && row2[i].trim() !== '') {
                 content += `<br><span style="font-size: 0.9em; font-weight: normal;">${row2[i]}</span>`;
             }
@@ -228,7 +233,6 @@
                             finalContent = finalContent.replace(/\[c\d+\]/, '').trim();
                         }
                         
-                        // 이 코드가 모든 셀의 || 기호를 줄바꿈으로 변경합니다.
                         element.innerHTML = finalContent.replace(/\s*\|\|\s*|\s*\/\/\s*/g, '<br>');
 
                     } else if (contentString) {

@@ -18,14 +18,30 @@
 
         .printable-area {
             width: 100%;
-            max-width: 943px; /* B4 비율에 맞게 최대 너비 조정 */
-            min-height: 670px; /* B4 비율에 맞는 최소 높이 설정 */
+            max-width: 943px; /* B4 비율 */
+            min-height: 670px; /* B4 비율 */
             margin: 30px auto;
             padding: 20px;
             background-color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border-radius: 8px;
-            page-break-inside: avoid; /* [추가] PDF 변환 시 이 영역 안에서 페이지가 나뉘지 않도록 함 */
+            page-break-inside: avoid;
+            position: relative; /* 배경 이미지 위치 기준점 */
+            background-repeat: no-repeat; /* 배경 이미지 반복 안 함 */
+        }
+
+        /* 1학기 워터마크 스타일 */
+        #semester-1-area {
+            background-image: url('images/snue1.png');
+            background-position: 20px 20px; /* 왼쪽 상단 */
+            background-size: 150px auto; /* 너비 150px, 높이 자동 */
+        }
+
+        /* 2학기 워터마크 스타일 */
+        #semester-2-area {
+            background-image: url('images/snue2.png');
+            background-position: right 20px bottom 20px; /* 오른쪽 하단 */
+            background-size: 100px auto; /* 너비 100px, 높이 자동 */
         }
 
         h1, h2 {
@@ -110,6 +126,7 @@
 </div>
 
 <script>
+    // 자바스크립트 부분은 변경사항 없습니다.
     const googleSheetURL_1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=0&single=true&output=csv';
     const googleSheetURL_2 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrFwmv2T8vOgcXWDadPZ15ddd6VLAqzQ_VSg5Cw9O8aecpom1Lr_wuImNogCYY3FxqwYJgIPhfAmrF/pub?gid=977776868&single=true&output=csv';
 
@@ -246,4 +263,3 @@
 
 </body>
 </html>
-
